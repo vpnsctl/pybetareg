@@ -127,7 +127,7 @@ while(tolerance > tol):
     betaold = param_new[0:p]
     thetaold = param_new[p:(p+q)]
 
-    tolerance = np.abs(loglik(param_new) - loglik(param_start))
+    tolerance = np.maximum(np.abs(loglik(param_new) - loglik(param_start)), np.linalg.norm(param_new-param_start))
     count += 1
 
 print('Number of iterations: ', count)
@@ -193,7 +193,7 @@ def ObsFisherInf(x):
     G2 = np.diagflat(auxG2)
 
     auxG3 = phiOF*muOF*(1-muOF)*(-np.log(y/(1-y))+digamma(muOF*phiOF)-digamma((1-muOF)*phiOF)+phiOF*muOF*polygamma(1,muOF*phiOF)-phiOF*(1-muOF)*polygamma(1,(1-muOF)*phiOF))
-    G3 =     G2 = np.diagflat(auxG3)
+    G3 = np.diagflat(auxG3)
 
     D2QBeta = np.matmul(np.matmul(X.T,G1),X)
     D2QBA= np.matmul(np.matmul(X.T,G3),Z)
@@ -211,7 +211,6 @@ def ObsFisherInf(x):
     G4TEMP = np.matmul(auxG4TEMP,auxG4TEMP.T)
     G4TEMP = G4TEMP - np.diagflat(np.diag(G4TEMP))
     G4 = G4+G4TEMP
-    #G4 = G4TEMP + diag(c(psigamma(phi,1)*phi^2))
 
     DQ2Beta = np.matmul(grad1,grad1.T)
     DQBetaAlfa = np.matmul(grad1,grad2.T)
@@ -228,15 +227,13 @@ def ObsFisherInf(x):
 
 # Standard Errors obtained from the Observed information matrix
 
-if np.sum(np.diag(np.linalg.inv(ObsFisherInf(param_new)))>0) < p+q:
-    print('Error: Unable to compute, matrix not positive definite')
-else:
-    SEMV_Obs = np.sqrt(np.diag(np.linalg.inv(ObsFisherInf(param_new))))
 
-    print('Standard Errors for Beta (Observed):',SEMV_Obs[0:p],'\n','Standard Errors for Theta (Observed):',SEMV_Obs[p:(p+q)])
+SEMV_Obs = np.sqrt(np.diag(np.linalg.inv(ObsFisherInf(param_new))))
 
-    print('Z values for Beta (Observed):',param_new[0:p]/SEMV_Obs[0:p],'\n','Z values for Theta (Observed):',param_new[p:(p+q)]/SEMV_Obs[p:(p+q)])
+print('Standard Errors for Beta (Observed):',SEMV_Obs[0:p],'\n','Standard Errors for Theta (Observed):',SEMV_Obs[p:(p+q)])
 
-    print('p-values for Beta (Observed):',1-norm.cdf(abs(param_new[0:p]/SEMV_Obs[0:p])/2),'\n','p-values for Theta (Observed):',1-norm.cdf(abs(param_new[p:(p+q)]/SEMV_Obs[p:(p+q)])/2))
+print('Z values for Beta (Observed):',param_new[0:p]/SEMV_Obs[0:p],'\n','Z values for Theta (Observed):',param_new[p:(p+q)]/SEMV_Obs[p:(p+q)])
+
+print('p-values for Beta (Observed):',1-norm.cdf(abs(param_new[0:p]/SEMV_Obs[0:p])/2),'\n','p-values for Theta (Observed):',1-norm.cdf(abs(param_new[p:(p+q)]/SEMV_Obs[p:(p+q)])/2))
 
 
