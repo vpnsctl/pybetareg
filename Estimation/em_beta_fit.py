@@ -10,8 +10,6 @@ import statsmodels.api as sm
 from scipy.special import gammaln, digamma
 # Optmization function
 from scipy.optimize import minimize
-# Euclidean norm function:
-from scipy.stats import norm
 
 # Obtaining the initial guesses
 
