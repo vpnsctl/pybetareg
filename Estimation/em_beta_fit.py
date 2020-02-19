@@ -71,7 +71,7 @@ def initial_guess(X, y, Z, link_mean, link_phi):
 
 def QFunction(x):
     '''
-    Log-Q function to the M-step of the EM-algorithm. In this step we
+    Q function to the M-step of the EM-algorithm. In this step we
     maximize this function.
 
     x: np.array. x consists of the vector of regression parameters 
@@ -97,8 +97,8 @@ def QFunction(x):
         covariates for the precision parameter.
         y: The pd.DataFrame or np.array of dimension n x 1 consisting of the 
         response variables.
-        thetaold: np.array. An array containg the previous values of the
-        theta parameters in the EM procedure (used in the M-step).
+        phiold: np.array. An array containg the previous values of the
+        phi parameters in the EM procedure (used in the M-step).
 
         The formula of the Q-Function:
         $Q(\theta;\theta^{(r)}) = \sum_{i=1}^n\left\{\phi_i
@@ -150,7 +150,9 @@ def gradQ(x):
         Z: The pd.DataFrame or np.array of dimension n x q consisting of the
         covariates for the precision parameter.
         y: The pd.DataFrame or np.array of dimension n x 1 consisting of the 
-        response variables..
+        response variables.
+        phiold: np.array. An array containg the previous values of the
+        phi parameters in the EM procedure (used in the M-step).
 
     '''
     # Making thetaold global so this function can read it its values when
