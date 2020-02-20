@@ -126,14 +126,16 @@ def gradQ(x):
     theta = x[p:(p+q)]
     mu = g_mu.inverse(np.dot(X, beta)).reshape((n, 1))
     phi = g_phi.inverse(np.dot(Z, theta)).reshape((n, 1))
+    dmudeta = g_mu.inverse_deriv(g_mu(mu)).reshape((n, 1))
+    dphideta = g_phi.inverse_deriv(g_phi(phi)).reshape((n, 1))
 
     grad1 = np.matmul(
         X.T, (np.log(y/(1-y))-digamma(mu*phi) +
-              digamma((1-mu)*phi))*mu*(1-mu)*phi)
+              digamma((1-mu)*phi))*dmudeta*phi)
 
     grad2 = np.matmul(Z.T, (mu*np.log(y/(1-y))+digamma(phiold) +
                             np.log(1-y)-mu*digamma(mu*phi) -
-                            (1-mu)*digamma((1-mu)*phi))*phi)
+                            (1-mu)*digamma((1-mu)*phi))*dphideta)
     grad = np.zeros_like(x)
 
     grad[0:p] = -grad1[:, 0]
